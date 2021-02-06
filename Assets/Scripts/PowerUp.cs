@@ -11,7 +11,7 @@ public class PowerUp : MonoBehaviour
     private PowerUp[] currentPowerUps;
     public bool isAttached = false;
 
-    private PlayerScript playerMovement;
+    private PlayerScript playerScript;
     private float TEMP_originalSpeed; // DELETE LATER
 
     // Multiplier
@@ -30,7 +30,7 @@ public class PowerUp : MonoBehaviour
     {
         if (other.gameObject.tag == "Player")
         {
-            PowerUp newPowerUp = other.gameObject.AddComponent<PowerUp>();
+            PowerUp newPowerUp = other.gameObject.GetComponentInParent<PlayerScript>().gameObject.AddComponent<PowerUp>();
             newPowerUp.SetValues(this, true);
             Destroy(this.gameObject);
         }
@@ -47,8 +47,8 @@ public class PowerUp : MonoBehaviour
         if (typeOfPowerUp == TypeOfPowerUp.MULTIPLIER)
             MultiplierPowerUp();
 
-        playerMovement = this.GetComponent<PlayerScript>();
-        TEMP_originalSpeed = playerMovement.moveSpeed;
+        playerScript = this.GetComponent<PlayerScript>();
+        TEMP_originalSpeed = playerScript.moveSpeed;
     }
 
     // Update is called once per frame
@@ -89,9 +89,6 @@ public class PowerUp : MonoBehaviour
             case TypeOfPowerUp.SPEED:
                 SpeedPowerDown();
                 break;
-            case TypeOfPowerUp.SHIELD:
-                ShieldPowerDown();
-                break;
             case TypeOfPowerUp.MULTIPLIER:
                 MultiplierPowerDown();
                 break;
@@ -100,23 +97,19 @@ public class PowerUp : MonoBehaviour
 
     void SpeedPowerUp()
     {
-        playerMovement.moveSpeed = strength;
+        playerScript.moveSpeed = strength;
     }
 
     void SpeedPowerDown()
     {
-        playerMovement.moveSpeed = TEMP_originalSpeed;
-        // playerMovement.moveSpeed = playerMovement.normalSpeed
+        playerScript.moveSpeed = TEMP_originalSpeed;
+        // playerScript.moveSpeed = playerScript.normalSpeed
     }
 
     void ShieldPowerUp()
     {
+        playerScript.SetShieldActive(true);
         // playerScript.shield = strength;
-    }
-
-    void ShieldPowerDown()
-    {
-        // playerScript.shield = 0.0f;
     }
 
     void MultiplierPowerUp()

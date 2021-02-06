@@ -11,9 +11,9 @@ public class PlayerScript : MonoBehaviour
 
     // Start is called before the first frame update
     public float moveSpeed;
-    
+
     [Range(0, 1)]
-    public float clampBoundariesMax;
+    public float clampBoundariesMin = 0.1f;
 
     public Transform aimTarget;
 
@@ -21,14 +21,26 @@ public class PlayerScript : MonoBehaviour
     public int leanSpeed = 40;
     public float lookSpeed = 340f;
 
-    public float maxHP;
-    public float currentHP;
+    [HideInInspector] public float maxHP;
+    public float hp = 100.0f;
 
-    public float currentShield;
+    public bool hasShield = false;
+    public bool isDead = false;
+
+    [SerializeField] private float collInvunerability = 5.0f;
+    private float currentInvunerability = 0.0f;
+
+    [SerializeField] private float collTwinkle = 0.1f;
+    private float currentcolTwinkle = 0.0f;
+
+    [SerializeField] private BoxCollider boxCollider;
+    [SerializeField] private MeshRenderer meshRenderer;
+    [SerializeField] private GameObject shieldVFXobj;
 
     void Start()
     {
-
+        maxHP = hp;
+        SetShieldActive(false);
     }
 
     void ColorInput()
@@ -75,8 +87,8 @@ public class PlayerScript : MonoBehaviour
         
         // Boundaries
         Vector3 pos = Camera.main.WorldToViewportPoint(transform.position);
-        pos.x = Mathf.Clamp(pos.x, 1 - clampBoundariesMax , clampBoundariesMax);
-        pos.y = Mathf.Clamp(pos.y, 1 - clampBoundariesMax, clampBoundariesMax);
+        pos.x = Mathf.Clamp(pos.x, clampBoundariesMin , 1 - clampBoundariesMin);
+        pos.y = Mathf.Clamp(pos.y, clampBoundariesMin, 1 - clampBoundariesMin);
         transform.position = Camera.main.ViewportToWorldPoint(pos);
         
         //Aim Position
@@ -95,5 +107,65 @@ public class PlayerScript : MonoBehaviour
     {
         MovementInput();
         ColorInput();
+        CollisionInvunerability();
+    }
+
+    public void ChangeHP(float amount)
+    {
+        if (amount < 0)
+        {
+            if (hasShield)
+            {
+                SetShieldActive(false);
+                return;
+            }
+            else
+            {
+                currentInvunerability = collInvunerability;
+                currentcolTwinkle = collTwinkle;
+            }
+        }
+
+        hp += amount;
+        hp = Mathf.Clamp(hp, 0, maxHP);
+
+        if (hp <= 0)
+        {
+            isDead = true;
+        }
+    }
+
+    public void SetShieldActive(bool active)
+    {
+        hasShield = active;
+        shieldVFXobj.SetActive(active);
+    }
+
+    void CollisionInvunerability()
+    {
+        if (currentInvunerability > 0)
+        {
+            currentInvunerability -= Time.deltaTime;
+            boxCollider.enabled = false;
+
+            if (currentcolTwinkle > 0)
+            {
+                currentcolTwinkle -= Time.deltaTime;
+            }
+            else
+            {
+                meshRenderer.enabled = !meshRenderer.enabled;
+                currentcolTwinkle = collTwinkle;
+            }
+
+        }
+        else
+        {
+            if (!boxCollider.enabled)
+            {
+                boxCollider.enabled = true;
+                meshRenderer.enabled = true;
+            }
+        }
     }
 }

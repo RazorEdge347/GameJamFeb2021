@@ -8,7 +8,6 @@
 		_AmbientColor("Ambient Color", Color) = (0.4,0.4,0.4,1)
 		[HDR]
 		_SpecularColor("Specular Color", Color) = (0.9,0.9,0.9,1)
-		_SpecularThreshold("Specular Threshold", Range(0.05, 10)) = 0.1
 		_Glossiness("Glossiness", Float) = 32
 		[HDR]
 		_RimColor("Rim Color", Color) = (1,1,1,1)
@@ -71,7 +70,6 @@
 			float4 _RimColor;
 			float _RimAmount;
 			float _RimThreshold;
-			float _SpecularThreshold;
 
 			float4 frag (v2f i) : SV_Target
 			{
@@ -87,7 +85,7 @@
 				float lightIntensity = smoothstep(0, 0.01, NdotL * shadow);
 				float4 light = lightIntensity * _LightColor0;
 
-				float specularIntensity = pow(NdotH * lightIntensity, _Glossiness * _Glossiness * _SpecularThreshold);
+				float specularIntensity = pow(NdotH * lightIntensity, _Glossiness * _Glossiness);
 				float specularIntensitySmooth = smoothstep(0.005, 0.01, specularIntensity);
 				float4 specular = specularIntensitySmooth * _SpecularColor;
 

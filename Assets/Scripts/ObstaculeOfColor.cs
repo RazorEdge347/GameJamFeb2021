@@ -14,12 +14,12 @@ public class ObstaculeOfColor : MonoBehaviour
     bool shrinked;
     bool expanded;
 
-    private PlayerMovement playerMovement;
+    private PlayerScript playerMovement;
 
     // Start is called before the first frame update
     void Start()
     {
-        playerMovement = GameObject.FindObjectOfType<PlayerMovement>();
+        playerMovement = GameObject.FindObjectOfType<PlayerScript>();
         boxCollider = this.GetComponent<BoxCollider>();
         initialScale = this.transform.localScale;
 

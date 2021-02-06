@@ -11,7 +11,7 @@ public class PowerUp : MonoBehaviour
     private PowerUp[] currentPowerUps;
     public bool isAttached = false;
 
-    private PlayerMovement playerMovement;
+    private PlayerScript playerMovement;
     private float TEMP_originalSpeed; // DELETE LATER
 
     // Multiplier
@@ -42,12 +42,12 @@ public class PowerUp : MonoBehaviour
         if (!isAttached)
             return;
 
-        // CatchSamePowerUp();
+        CatchSamePowerUp();
 
         if (typeOfPowerUp == TypeOfPowerUp.MULTIPLIER)
             MultiplierPowerUp();
 
-        playerMovement = this.GetComponent<PlayerMovement>();
+        playerMovement = this.GetComponent<PlayerScript>();
         TEMP_originalSpeed = playerMovement.moveSpeed;
     }
 
@@ -56,8 +56,6 @@ public class PowerUp : MonoBehaviour
     {
         if (!isAttached)
             return;
-
-        Debug.Log("AHAHHAHA");
 
         if (duration > 0.0f)
         {
